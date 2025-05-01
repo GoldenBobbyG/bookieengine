@@ -30,10 +30,29 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     res.sendStatus(401); // Unauthorized
   }
 };
+// GraphQL middleware
+export const authMiddleware = async ({req}: { req: Request }) => {
+
+  const authHeader = req.headers.authorization;
+
+  if (authHeader) {
+    const token = authHeader.split(' ')[1];
+    const secretKey = process.env.JWT_SECRET_KEY || 'testsecretkey';
+
+    try {
+      const {data} = jwt.verify(token, secretKey, { maxAge: '1h' }) as { data: JwtPayload };
+      return { user: data };
+    } catch (error) {
+      console.log( 'Token no working');
+    }
+  }
+
+    return { user: null };
+  };
 
 export const signToken = (username: string, email: string, _id: unknown) => {
   const payload = { username, email, _id };
-  const secretKey = process.env.JWT_SECRET_KEY || '';
+  const secretKey = process.env.JWT_SECRET_KEY || 'testsecretkey';
 
   return jwt.sign(payload, secretKey, { expiresIn: '1h' });
 };
