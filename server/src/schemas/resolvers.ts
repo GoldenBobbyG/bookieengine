@@ -1,10 +1,10 @@
 import { AuthenticationError } from 'apollo-server-express';
-import User from '../models/User';
+import  User  from '../models/User.js';
 import {signToken} from '../services/auth.js';
 
 const resolvers = {
     Query: {
-        me: async (_parent: unknown, _args: unknown, context: Context) => {
+        me: async (_parent: unknown, _args: unknown, context: { user: { _id: any; }; }) => {
             if (context.user) {
                 return User.findOne({_id: context.user._id});
             }
